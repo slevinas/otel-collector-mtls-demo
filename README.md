@@ -2,7 +2,7 @@
 
 This project demonstrates secure telemetry collection using **OpenTelemetry** in a Python FastAPI app, exporting **metrics and traces** to an OpenTelemetry Collector over **mutual TLS (mTLS)**.
 
--  It also shows how to enrich metrics with tags using the Collector’s transform processor.
+- It also shows how to enrich metrics with tags using the Collector’s transform processor.
 
 ---
 
@@ -41,6 +41,9 @@ This project demonstrates secure telemetry collection using **OpenTelemetry** in
 │ ├── client.crt
 │ └── client.key
 ├── collector/
+| |__logs/
+| |   |--tagged_metrics.json
+| |   |--tagged_metrics_pretty.json
 │ └── mtls-collector-config.yaml  # Collector config (mTLS enabled)
 ├── .env
 ├── docker-compose.yaml
@@ -109,8 +112,6 @@ uvicorn admin_server.app:app --reload
 - If you see errors about certificates or connection refused, double-check your cert paths, SAN config, and collector status.
 
 ### 6. OpenTelemetry Collector Config (snippet)
-
-
 
 ### 7. See Telemetry
 

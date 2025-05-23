@@ -16,9 +16,6 @@ v
 v
 [ Backend: Debug/Files, ClickHouse, Jaeger, etc ]
 
-markdown
-Copy
-Edit
 
 - **This repo demonstrates:**
   - Secure mTLS setup (CA, server, client certs)
@@ -95,24 +92,25 @@ openssl req -new -key client.key -out client.csr -config client-openssl.cnf
 openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365 -sha256 -extfile client-openssl.cnf -extensions req_ext
 ```
 
-2. Set Environment Variables
-Create a .env file in your project root:
+### 2. Set Environment Variables
+* Create a .env file in your project root:
 
-dotenv
-Copy
-Edit
+```dotenv
+
 OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=https://localhost:4318/v1/metrics
 OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=https://localhost:4318/v1/traces
 OTEL_EXPORTER_OTLP_CERTIFICATE=certs/ca.crt
 OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE=certs/client.crt
 OTEL_EXPORTER_OTLP_CLIENT_KEY=certs/client.key
 OTEL_EXPORTER_OTLP_INSECURE=false
-3. Configure and Run the OTel Collector
-Example docker-compose.yaml:
 
-yaml
-Copy
-Edit
+```
+
+### 3. Configure and Run the OTel Collector
+* Example docker-compose.yaml:
+
+```yaml
+
 services:
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
@@ -125,11 +123,12 @@ services:
       - ./otel-collector-config.yaml:/etc/otel/config.yaml:ro
       - ./certs:/etc/otel/certs:ro
     restart: unless-stopped
-Example otel-collector-config.yaml:
 
-yaml
-Copy
-Edit
+```
+* Example otel-collector-config.yaml:
+
+```yaml
+
 receivers:
   otlp:
     protocols:
@@ -160,11 +159,13 @@ service:
       exporters: [debug]
 Tip:
 To add a custom tag to all metrics (e.g., env=dev), use a transform processor in your pipeline.
+```
 
-4. Run Everything
-bash
-Copy
-Edit
+
+### 4. Run Everything
+
+```bash
+
 # Start Collector
 docker compose up --build -d
 
@@ -172,52 +173,53 @@ docker compose up --build -d
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 uvicorn admin_server.app:app --reload
-Check your collector logs for incoming telemetry data.
+```
+* Check your collector logs for incoming telemetry data.
 
-📖 How mTLS Secures Telemetry
-mTLS ensures both the FastAPI client and the OTel Collector server authenticate each other, using certificates signed by a trusted CA.
+### 📖 How mTLS Secures Telemetry
+- mTLS ensures both the FastAPI client and the OTel Collector server authenticate each other, using certificates signed by a trusted CA.
 
-Only trusted services (with valid client certs) can send telemetry.
+- Only trusted services (with valid client certs) can send telemetry.
 
-The server certificate’s SAN must include the hostname/IP used by clients (e.g., otel-collector, localhost).
+- The server certificate’s SAN must include the hostname/IP used by clients (e.g., otel-collector, localhost).
 
-The client certificate’s CN/SAN is used for audit/identification, not hostname matching.
+- The client certificate’s CN/SAN is used for audit/identification, not hostname matching.
 
-⚠️ Troubleshooting
-certificate verify failed: CA, SAN, or certificate files do not match—double-check hostnames and file paths.
+### ⚠️ Troubleshooting
+> * certificate verify failed: CA, SAN, or certificate files do not match—double-check hostnames and file paths.
 
-bad record MAC: Usually a key/cert mismatch or wrong format (use PEM).
+> * bad record MAC: Usually a key/cert mismatch or wrong format (use PEM).
 
-hostname mismatch: Python client is connecting to localhost, but server cert SAN doesn’t include localhost.
+> * hostname mismatch: Python client is connecting to localhost, but server cert SAN doesn’t include localhost.
 
-Unable to load certificate: Wrong file paths or permissions.
+> * Unable to load certificate: Wrong file paths or permissions.
 
-🔐 Rotating Certificates
-Issue new certs (CA, server, client as needed).
+### 🔐 Rotating Certificates
+> * Issue new certs (CA, server, client as needed).
 
-Replace files on both collector and client sides.
+> * Replace files on both collector and client sides.
 
-Restart affected containers/services.
+> * Restart affected containers/services.
 
-⚙️ ENVIRONMENT VARIABLES REFERENCE
-Variable	Purpose
-OTEL_EXPORTER_OTLP_METRICS_ENDPOINT	OTel metrics HTTPS endpoint
-OTEL_EXPORTER_OTLP_TRACES_ENDPOINT	OTel traces HTTPS endpoint
-OTEL_EXPORTER_OTLP_CERTIFICATE	CA cert path
-OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE	Client cert path
-OTEL_EXPORTER_OTLP_CLIENT_KEY	Client key path
-OTEL_EXPORTER_OTLP_INSECURE	Set false for TLS/mTLS
+### ⚙️ ENVIRONMENT VARIABLES REFERENCE
+Variable	                                     Purpose
+OTEL_EXPORTER_OTLP_METRICS_ENDPOINT	           OTel metrics HTTPS endpoint
+OTEL_EXPORTER_OTLP_TRACES_ENDPOINT	           OTel traces HTTPS endpoint
+OTEL_EXPORTER_OTLP_CERTIFICATE               	 CA cert path
+OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE	         Client cert path
+OTEL_EXPORTER_OTLP_CLIENT_KEY	                 Client key path
+OTEL_EXPORTER_OTLP_INSECURE	                   Set false for TLS/mTLS
 
-💡 Best Practices for Internal Use
-Always use mTLS for sensitive telemetry flows (prevents spoofing and eavesdropping).
+### 💡 Best Practices for Internal Use
+> * Always use mTLS for sensitive telemetry flows (prevents spoofing and eavesdropping).
 
-Rotate certs regularly, automate issuance/rotation if possible.
+> * Rotate certs regularly, automate issuance/rotation if possible.
 
-Never share private keys; keep cert permissions tight (600 or 400).
+> * Never share private keys; keep cert permissions tight (600 or 400).
 
-Use unique client certs per service for better traceability and revocation.
+> * Use unique client certs per service for better traceability and revocation.
 
-📋 Resources
+### 📋 Resources
 OpenTelemetry Collector Docs
 
 OpenTelemetry Python
@@ -229,32 +231,3 @@ OpenSSL Cookbook
 Maintainer: Your Name/Team
 **Contributions and questions welcome!_
 
-yaml
-Copy
-Edit
-
----
-
-### **How to Commit**
-
-1. **Branch name suggestion:**
-docs/otel-mtls-demo
-
-markdown
-Copy
-Edit
-
-2. **Commit message suggestion:**
-docs: Add complete OpenTelemetry Collector mTLS demo and best practices README
-
-pgsql
-Copy
-Edit
-
-3. **How to push:**
-```bash
-git checkout -b docs/otel-mtls-demo
-git add README.md docker-compose.yaml otel-collector-config.yaml certs/
-git commit -m "docs: Add complete OpenTelemetry Collector mTLS demo and best practices README"
-git push origin docs/otel-mtls-demo
-````
