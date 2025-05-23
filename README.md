@@ -68,8 +68,6 @@ python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-
-
 ### 4. Docker Compose Setup
 
 ```yaml
@@ -161,14 +159,14 @@ service:
         ]
       exporters: [debug]
 ```
+
 ---
+
 ### 🐍 Python OTel SDK Example
 
 Here's how to configure a Python service to send telemetry securely to the collector using mTLS:
 
 **1. Set required environment variables** (in your `.env`):
-
-
 
 ```env
 OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=https://otel-collector:4318/v1/metrics
@@ -177,11 +175,11 @@ OTEL_EXPORTER_OTLP_CERTIFICATE=certs/ca.crt
 OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE=certs/client.crt
 OTEL_EXPORTER_OTLP_CLIENT_KEY=certs/client.key
 ```
+
 > **Note:**  
-> When running both your Python service and the OTel Collector in the same `docker-compose` network, you can use the collector's service name as the hostname (e.g., `otel-collector:4318` as above).  
+> When running both your Python service and the OTel Collector in the same `docker-compose` network, you can use the collector's service name as the hostname (e.g., `otel-collector:4318` as above).
 
 > If your Python service runs outside Docker, use `localhost:4318` instead, since `otel-collector` will not resolve as a DNS name on your local machine.
-
 
 - .env for running locally(This actual example):
 
@@ -198,7 +196,9 @@ OTEL_EXPORTER_OTLP_CLIENT_KEY=certs/client.key
 OTEL_EXPORTER_OTLP_INSECURE=false
 
 ```
-**2.  Python setup code:
+
+\*\*2. Python setup code:
+
 ```python
 import os
 from dotenv import load_dotenv
@@ -244,8 +244,8 @@ meter = metrics.get_meter("example-meter")
 tracer = trace.get_tracer("example-tracer")
 
 ```
----
 
+---
 
 ### 6. Run the OTel Collector (with mTLS)
 
@@ -269,7 +269,7 @@ uvicorn admin_server.app:app --reload
 
 - If you see errors about certificates or connection refused, double-check your cert paths, SAN config, and collector status.
 
-### Test collector manually  **Push Test Metric:**
+### 8. Test collector manually **Push Test Metric:**
 
 ```bash
 curl -k https://localhost:4318/v1/metrics \
@@ -279,29 +279,12 @@ curl -k https://localhost:4318/v1/metrics \
 --data-binary @docs/otel-collector/test-metric.json
 ```
 
-### 5.6. **Inspect Output:**
+### 9. **Inspect Output:**
 
-- `cat logs/tagged_metrics.json | jq .`
+- 1. file: `cat logs/tagged_metrics.json | jq .`
 - Confirm both static `org_name` and dynamic `client_id` are present.
 
-### 5.7. **Hardening & Cleanup:**
-
-- Run collector under a non-root UID/GID.
-- Drop unnecessary Linux capabilities.
-- Set `logging.level` to `info` or `error`.
-
----
-
-
-
-## 📌 6. Next Steps
-
-- Add remote `otlp` exporter for production telemetry.
-- Integrate Helm/Kubernetes manifests with `Secret` volumes for TLS.
-- Automate cert rotation with a vault or certificate manager.
-
-
-### 6.2. Expected Output with Static and Dynamic Tagging
+### 9.2. Expected Output with Static and Dynamic Tagging
 
 ```json
 {
@@ -330,18 +313,48 @@ curl -k https://localhost:4318/v1/metrics \
 }
 ```
 
-### 7. See Telemetry
+### . Use jq to pretty json
 
-All spans and metrics are printed in the collector logs (since debug exporter is used).
-Look for your custom tags or metrics to confirm the full pipeline.
+`jq . collector/logs/tagged_metrics.json > collector/logs/tagged_metrics_pretty.json`
 
-### 8. Common Pitfalls
+> 2. checkout metric output in `collector/logs/tagged_metrics_pretty.json`
+
+> 3. All spans are printed in the collector logs (since debug exporter is used).
+>    Look for your custom tags or metrics to confirm the full pipeline.
+
+### . Common Pitfalls
 
 SSLError: Hostname mismatch: Your server cert must have localhost or the actual OTLP endpoint hostname in its SAN field.
 
 Permission denied: Double-check cert file permissions in Docker.
 
 Collector not running: Ensure container is up and listening on 4318.
+
+### 8. Best Practices & Recommendations
+
+- Rotate certificates regularly.
+
+- Use strong keys and CAs. Prefer at least RSA 2048 or ECC certificates.
+
+- Store keys securely: Restrict read permissions.
+
+- Separate test and production certificates/authorities.
+
+- Document certificate generation and renewal.
+
+- Add environment/tenant/application attributes to telemetry early in the pipeline (via transform processor or SDK).
+
+- Monitor collector logs for certificate errors, especially after renewal.
+
+## 9. Critical Configuration Points to Watch
+
+| Section                          | Key Concern                                      | Example/Reminder                                       |
+| -------------------------------- | ------------------------------------------------ | ------------------------------------------------------ |
+| `receivers.otlp.protocols.*.tls` | Certificates must match expected hostname / IP   | Mismatches cause connection errors                     |
+| `client_auth`                    | Controls whether clients must present certs      | Set to `require_and_verify_client_cert` for mTLS       |
+| `exporters.*.tls`                | Must be configured if remote endpoint uses HTTPS | Omitting it causes "connection refused" or "TLS error" |
+| Cert File Paths                  | Must be **mounted correctly** inside Docker/K8s  | Use `/etc/otel/certs/...` with volumeMounts            |
+| Env Variables                    | Avoid injecting secrets via `env:` in YAML       | Prefer mounted files or Vault integration              |
 
 ### 9. References
 
@@ -360,7 +373,16 @@ Feel free to use as a starting point for production-grade OTel setups!
 
 ---
 
-**Tips:**
+### **Hardening & Cleanup:**
 
-- Keep cert/private key files out of public repos.
-- Expand sections as your demo grows (add transform processor details if needed).
+- Run collector under a non-root UID/GID.
+- Drop unnecessary Linux capabilities.
+- Set `logging.level` to `info` or `error`.
+
+---
+
+## 📌 6. Next Steps
+
+- Add remote `otlp` exporter for production telemetry.
+- Integrate Helm/Kubernetes manifests with `Secret` volumes for TLS.
+- Automate cert rotation with a vault or certificate manager.
