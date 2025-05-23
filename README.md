@@ -12,11 +12,11 @@ This project demonstrates secure telemetry collection using **OpenTelemetry** in
 - [Prerequisites](#1-prerequisites)
 - [Clone & Setup](#2-clone--setup)
 - [Directory & File Structure](#️-project-structure-key-files)
-- [Environment Variables](#3-environment-variables)
 - [Docker Compose Setup](#docker-compose-setup)
 - [Collector mTLS Configuration](#5--collector-config-used-in-this-demo)
 - [Run the OTel Collector (with mTLS)](#6-run-the-otel-collector-with-mtls)
 - [Python OTel SDK Example](#python-otel-sdk-example)
+- [Environment Variables](#3-environment-variables)
 - [Enriching Metrics with the Transform Processor](#enriching-metrics-with-the-transform-processor)
 
 - [Troubleshooting](#troubleshooting)
@@ -68,25 +68,7 @@ python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. Environment Variables
 
-- .env example (adjust paths as needed):
-
-```env
-
-OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=https://localhost:4318/v1/metrics
-OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=https://localhost:4318/v1/traces
-
-
-OTEL_EXPORTER_OTLP_ENDPOINT=https://localhost:4318
-
-
-OTEL_EXPORTER_OTLP_CERTIFICATE=certs/ca.crt
-OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE=certs/client.crt
-OTEL_EXPORTER_OTLP_CLIENT_KEY=certs/client.key
-OTEL_EXPORTER_OTLP_INSECURE=false
-
-```
 
 ### 4. Docker Compose Setup
 
@@ -179,6 +161,91 @@ service:
         ]
       exporters: [debug]
 ```
+---
+### 🐍 Python OTel SDK Example
+
+Here's how to configure a Python service to send telemetry securely to the collector using mTLS:
+
+**1. Set required environment variables** (in your `.env`):
+
+
+
+```env
+OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=https://otel-collector:4318/v1/metrics
+OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=https://otel-collector:4318/v1/traces
+OTEL_EXPORTER_OTLP_CERTIFICATE=certs/ca.crt
+OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE=certs/client.crt
+OTEL_EXPORTER_OTLP_CLIENT_KEY=certs/client.key
+```
+> **Note:**  
+> When running both your Python service and the OTel Collector in the same `docker-compose` network, you can use the collector's service name as the hostname (e.g., `otel-collector:4318` as above).  
+
+> If your Python service runs outside Docker, use `localhost:4318` instead, since `otel-collector` will not resolve as a DNS name on your local machine.
+
+
+- .env for running locally(This actual example):
+
+```env
+
+OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=https://localhost:4318/v1/metrics
+OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=https://localhost:4318/v1/traces
+OTEL_EXPORTER_OTLP_ENDPOINT=https://localhost:4318
+
+
+OTEL_EXPORTER_OTLP_CERTIFICATE=certs/ca.crt
+OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE=certs/client.crt
+OTEL_EXPORTER_OTLP_CLIENT_KEY=certs/client.key
+OTEL_EXPORTER_OTLP_INSECURE=false
+
+```
+**2.  Python setup code:
+```python
+import os
+from dotenv import load_dotenv
+from opentelemetry import trace, metrics
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
+from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+
+load_dotenv()  # Load env vars
+
+resource = Resource.create({"service.name": "py-app-for-otel-collectors-example"})
+cert = os.environ["OTEL_EXPORTER_OTLP_CERTIFICATE"]
+client_cert = os.environ["OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE"]
+client_key = os.environ["OTEL_EXPORTER_OTLP_CLIENT_KEY"]
+
+metrics.set_meter_provider(MeterProvider(
+    resource=resource,
+    metric_readers=[
+        PeriodicExportingMetricReader(OTLPMetricExporter(
+            endpoint=os.environ["OTEL_EXPORTER_OTLP_METRICS_ENDPOINT"],
+            certificate_file=cert,
+            client_certificate_file=client_cert,
+            client_key_file=client_key,
+        ))
+    ]
+))
+
+trace.set_tracer_provider(TracerProvider(
+    resource=resource,
+    active_span_processor=BatchSpanProcessor(OTLPSpanExporter(
+        endpoint=os.environ["OTEL_EXPORTER_OTLP_TRACES_ENDPOINT"],
+        certificate_file=cert,
+        client_certificate_file=client_cert,
+        client_key_file=client_key,
+    ))
+))
+
+meter = metrics.get_meter("example-meter")
+tracer = trace.get_tracer("example-tracer")
+
+```
+---
+
 
 ### 6. Run the OTel Collector (with mTLS)
 
@@ -201,6 +268,38 @@ uvicorn admin_server.app:app --reload
 ```
 
 - If you see errors about certificates or connection refused, double-check your cert paths, SAN config, and collector status.
+
+### Test collector manually  **Push Test Metric:**
+
+```bash
+curl -k https://localhost:4318/v1/metrics \
+--cert certs/client.crt --key certs/client.key \
+--cacert certs/ca.crt \
+-H "Content-Type: application/json" \
+--data-binary @docs/otel-collector/test-metric.json
+```
+
+### 5.6. **Inspect Output:**
+
+- `cat logs/tagged_metrics.json | jq .`
+- Confirm both static `org_name` and dynamic `client_id` are present.
+
+### 5.7. **Hardening & Cleanup:**
+
+- Run collector under a non-root UID/GID.
+- Drop unnecessary Linux capabilities.
+- Set `logging.level` to `info` or `error`.
+
+---
+
+
+
+## 📌 6. Next Steps
+
+- Add remote `otlp` exporter for production telemetry.
+- Integrate Helm/Kubernetes manifests with `Secret` volumes for TLS.
+- Automate cert rotation with a vault or certificate manager.
+
 
 ### 6.2. Expected Output with Static and Dynamic Tagging
 
