@@ -8,16 +8,15 @@ This project demonstrates secure telemetry collection using **OpenTelemetry** in
 
 ## Table of Contents
 
-- [Overview](#overview)
 - [Project Structure (Key Files)](#️-project-structure-key-files)
 - [Prerequisites](#1-prerequisites)
 - [Clone & Setup](#2-clone--setup)
-- [Environment Variables](#environment-variables)
 - [Directory & File Structure](#️-project-structure-key-files)
-- [Collector mTLS Configuration](#collector-mtls-configuration)
+- [Environment Variables](#3-environment-variables)
 - [Docker Compose Setup](#docker-compose-setup)
+- [Collector mTLS Configuration](#5--collector-config-used-in-this-demo)
+- [Run the OTel Collector (with mTLS)](#6-run-the-otel-collector-with-mtls)
 - [Python OTel SDK Example](#python-otel-sdk-example)
-- [Run the OTel Collector (with mTLS)](#4-run-the-otel-collector-with-mtls)
 - [Enriching Metrics with the Transform Processor](#enriching-metrics-with-the-transform-processor)
 
 - [Troubleshooting](#troubleshooting)
@@ -89,7 +88,7 @@ OTEL_EXPORTER_OTLP_INSECURE=false
 
 ```
 
-### Docker Compose Setup
+### 4. Docker Compose Setup
 
 ```yaml
 version: "3.9"
@@ -109,29 +108,7 @@ services:
     restart: unless-stopped
 ```
 
-### 4. Run the OTel Collector (with mTLS)
-
-```bash
-
-docker compose up --build -d
-```
-
-#### Check the logs:
-
-```bash
-
-docker logs otel-collector
-```
-
-### 5. Run the FastAPI App
-
-```bash
-uvicorn admin_server.app:app --reload
-```
-
-- If you see errors about certificates or connection refused, double-check your cert paths, SAN config, and collector status.
-
-### 6. OpenTelemetry Collector Config (used in this demo)
+### 5. Collector Config (used in this demo)
 
 ```yaml
 receivers:
@@ -203,7 +180,29 @@ service:
       exporters: [debug]
 ```
 
-### 7. Output with Static and Dynamic Tagging
+### 6. Run the OTel Collector (with mTLS)
+
+```bash
+
+docker compose up --build -d
+```
+
+#### 6.1. Check the logs:
+
+```bash
+
+docker logs otel-collector
+```
+
+### 7. Run the FastAPI App
+
+```bash
+uvicorn admin_server.app:app --reload
+```
+
+- If you see errors about certificates or connection refused, double-check your cert paths, SAN config, and collector status.
+
+### 6.2. Expected Output with Static and Dynamic Tagging
 
 ```json
 {
