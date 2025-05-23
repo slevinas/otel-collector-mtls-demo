@@ -13,7 +13,7 @@ This project demonstrates secure telemetry collection using **OpenTelemetry** in
 - [Prerequisites](#1-prerequisites)
 - [Clone & Setup](#2-clone--setup)
 - [Environment Variables](#environment-variables)
-- [Directory & File Structure](#directory--file-structure)
+- [Directory & File Structure](#️-project-structure-key-files)
 - [Collector mTLS Configuration](#collector-mtls-configuration)
 - [Docker Compose Setup](#docker-compose-setup)
 - [Python OTel SDK Example](#python-otel-sdk-example)
@@ -89,6 +89,26 @@ OTEL_EXPORTER_OTLP_INSECURE=false
 
 ```
 
+### Docker Compose Setup
+
+```yaml
+version: "3.9"
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    command: ["--config=/etc/otel/config.yaml"]
+    ports:
+      - "4317:4317" # gRPC
+      - "4318:4318" # HTTP
+    volumes:
+      - ./collector/otel-collector-tag-example.yaml:/etc/otel/config.yaml:ro
+      # - ./collector/mtls-collector-config.yaml:/etc/otel/config.yaml:ro
+      - ./collector/logs:/otel-logs:rw
+      - ./certs:/etc/otel/certs:ro
+    restart: unless-stopped
+```
+
 ### 4. Run the OTel Collector (with mTLS)
 
 ```bash
@@ -111,7 +131,106 @@ uvicorn admin_server.app:app --reload
 
 - If you see errors about certificates or connection refused, double-check your cert paths, SAN config, and collector status.
 
-### 6. OpenTelemetry Collector Config (snippet)
+### 6. OpenTelemetry Collector Config (used in this demo)
+
+```yaml
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+        tls:
+          cert_file: /etc/otel/certs/server.crt
+          key_file: /etc/otel/certs/server.key
+          client_ca_file: /etc/otel/certs/ca.crt # ← this enables mTLS(tells the Collector, “require a client cert signed by this CA” (i.e. mTLS).)
+      http:
+        endpoint: 0.0.0.0:4318
+        tls:
+          cert_file: /etc/otel/certs/server.crt
+          key_file: /etc/otel/certs/server.key
+          client_ca_file: /etc/otel/certs/ca.crt # ← tells the Collector, “require a client cert signed by this CA” (i.e. mTLS).
+
+processors:
+  memory_limiter:
+    check_interval: 5s
+    limit_mib: 200
+    spike_limit_mib: 50
+  batch:
+    timeout: 5s
+    send_batch_size: 1024
+  attributes/add_client_tag:
+    actions:
+      - key: org_name
+        value: XPLG-benchmarker-dev-tag-test
+        action: insert
+  transform/tag_metrics:
+    metric_statements:
+      - context: datapoint
+        statements:
+          - set(datapoint.attributes["client_id"], resource.attributes["service.name"])
+
+exporters:
+  # otlp/http:
+  #   endpoint: https://otel-backend.example.com:4318
+  #   tls:
+  #     ca_file: /etc/otel/certs/ca.crt # your backend’s CA
+  debug:
+    verbosity: detailed
+  file/tagged_metrics:
+    path: /otel-logs/tagged_metrics.json
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors:
+        [
+          memory_limiter,
+          batch,
+          attributes/add_client_tag,
+          transform/tag_metrics,
+        ]
+      exporters: [file/tagged_metrics]
+    traces:
+      receivers: [otlp]
+      processors:
+        [
+          memory_limiter,
+          batch,
+          attributes/add_client_tag,
+          transform/tag_metrics,
+        ]
+      exporters: [debug]
+```
+
+### 7. Output with Static and Dynamic Tagging
+
+```json
+{
+  "resource": {
+    "attributes": {
+      "service.name": "admin-api",
+      "org_name": "XPLG-benchmarker-dev-tag-test"
+    }
+  },
+  "metrics": [
+    {
+      "name": "operation_success_count",
+      "data": {
+        "data_points": [
+          {
+            "attributes": {
+              "endpoint": "run_vector_math",
+              "client_id": "admin-api"
+            },
+            "value": 10
+          }
+        ]
+      }
+    }
+  ]
+}
+```
 
 ### 7. See Telemetry
 
