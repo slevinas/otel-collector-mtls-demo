@@ -1,0 +1,43 @@
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Virtualenv
+# Virtual Envs
+.venv/
+venv/
+env/
+
+__pycache__/
+
+# VSCode
+.vscode/
+
+
+# macOS
+.DS_Store
+.idea/
+benchmarks/
+tmp_benchmarks/
+tmp_benchmarks_backup/.env
+.env
+telemetry_output.json
+clickhouse_data/docker/data/
+data/*
+# Docker
+docker/*
+docker/admin_server/otel-collector/logs
+
+# shared
+shared/*
+ca.key
+ca.srl
+client.csr
+server.csr
+docs/*
+
+LatencyEvent_*

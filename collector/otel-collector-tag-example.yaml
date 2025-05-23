@@ -1,0 +1,67 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+        tls:
+          cert_file: /etc/otel/certs/server.crt
+          key_file: /etc/otel/certs/server.key
+          client_ca_file: /etc/otel/certs/ca.crt # ← this enables mTLS(tells the Collector, “require a client cert signed by this CA” (i.e. mTLS).)
+      http:
+        endpoint: 0.0.0.0:4318
+        tls:
+          cert_file: /etc/otel/certs/server.crt
+          key_file: /etc/otel/certs/server.key
+          client_ca_file: /etc/otel/certs/ca.crt # ← tells the Collector, “require a client cert signed by this CA” (i.e. mTLS).
+
+processors:
+  memory_limiter:
+    check_interval: 5s
+    limit_mib: 200
+    spike_limit_mib: 50
+  batch:
+    timeout: 5s
+    send_batch_size: 1024
+  attributes/add_client_tag:
+    actions:
+      - key: org_name
+        value: XPLG-benchmarker-dev-tag-test
+        action: insert
+  transform/tag_metrics:
+    metric_statements:
+      - context: datapoint
+        statements:
+          - set(datapoint.attributes["client_id"], resource.attributes["service.name"])
+
+exporters:
+  # otlp/http:
+  #   endpoint: https://otel-backend.example.com:4318
+  #   tls:
+  #     ca_file: /etc/otel/certs/ca.crt # your backend’s CA
+  debug:
+    verbosity: detailed
+  file/tagged_metrics:
+    path: /otel-logs/tagged_metrics.json
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors:
+        [
+          memory_limiter,
+          batch,
+          attributes/add_client_tag,
+          transform/tag_metrics,
+        ]
+      exporters: [file/tagged_metrics]
+    traces:
+      receivers: [otlp]
+      processors:
+        [
+          memory_limiter,
+          batch,
+          attributes/add_client_tag,
+          transform/tag_metrics,
+        ]
+      exporters: [debug]

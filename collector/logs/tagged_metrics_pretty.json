@@ -1,0 +1,855 @@
+{
+  "resourceMetrics": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "telemetry.sdk.language",
+            "value": {
+              "stringValue": "python"
+            }
+          },
+          {
+            "key": "telemetry.sdk.name",
+            "value": {
+              "stringValue": "opentelemetry"
+            }
+          },
+          {
+            "key": "telemetry.sdk.version",
+            "value": {
+              "stringValue": "1.33.1"
+            }
+          },
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "py-app-for-otel-collectors-example"
+            }
+          }
+        ]
+      },
+      "scopeMetrics": [
+        {
+          "scope": {
+            "name": "example-meter"
+          },
+          "metrics": [
+            {
+              "name": "hello_requests",
+              "sum": {
+                "dataPoints": [
+                  {
+                    "attributes": [
+                      {
+                        "key": "endpoint",
+                        "value": {
+                          "stringValue": "run_vector_math"
+                        }
+                      },
+                      {
+                        "key": "org_name",
+                        "value": {
+                          "stringValue": "XPLG-benchmarker-dev-tag-test"
+                        }
+                      },
+                      {
+                        "key": "client_id",
+                        "value": {
+                          "stringValue": "py-app-for-otel-collectors-example"
+                        }
+                      }
+                    ],
+                    "startTimeUnixNano": "1747934337075381000",
+                    "timeUnixNano": "1747934371725929000",
+                    "asInt": "9",
+                    "exemplars": [
+                      {
+                        "timeUnixNano": "1747934337075335000",
+                        "asInt": "9",
+                        "spanId": "2c2481d13c9e55d9",
+                        "traceId": "f4f4a25d1b7fdaf21a07aca635036e2e"
+                      }
+                    ]
+                  }
+                ],
+                "aggregationTemporality": 2,
+                "isMonotonic": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{
+  "resourceMetrics": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "telemetry.sdk.language",
+            "value": {
+              "stringValue": "python"
+            }
+          },
+          {
+            "key": "telemetry.sdk.name",
+            "value": {
+              "stringValue": "opentelemetry"
+            }
+          },
+          {
+            "key": "telemetry.sdk.version",
+            "value": {
+              "stringValue": "1.33.1"
+            }
+          },
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "py-app-for-otel-collectors-example"
+            }
+          }
+        ]
+      },
+      "scopeMetrics": [
+        {
+          "scope": {
+            "name": "example-meter"
+          },
+          "metrics": [
+            {
+              "name": "hello_requests",
+              "sum": {
+                "dataPoints": [
+                  {
+                    "attributes": [
+                      {
+                        "key": "endpoint",
+                        "value": {
+                          "stringValue": "run_vector_math"
+                        }
+                      },
+                      {
+                        "key": "org_name",
+                        "value": {
+                          "stringValue": "XPLG-benchmarker-dev-tag-test"
+                        }
+                      },
+                      {
+                        "key": "client_id",
+                        "value": {
+                          "stringValue": "py-app-for-otel-collectors-example"
+                        }
+                      }
+                    ],
+                    "startTimeUnixNano": "1747934337075381000",
+                    "timeUnixNano": "1747934431774532000",
+                    "asInt": "9"
+                  }
+                ],
+                "aggregationTemporality": 2,
+                "isMonotonic": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{
+  "resourceMetrics": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "telemetry.sdk.language",
+            "value": {
+              "stringValue": "python"
+            }
+          },
+          {
+            "key": "telemetry.sdk.name",
+            "value": {
+              "stringValue": "opentelemetry"
+            }
+          },
+          {
+            "key": "telemetry.sdk.version",
+            "value": {
+              "stringValue": "1.33.1"
+            }
+          },
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "py-app-for-otel-collectors-example"
+            }
+          }
+        ]
+      },
+      "scopeMetrics": [
+        {
+          "scope": {
+            "name": "example-meter"
+          },
+          "metrics": [
+            {
+              "name": "hello_requests",
+              "sum": {
+                "dataPoints": [
+                  {
+                    "attributes": [
+                      {
+                        "key": "endpoint",
+                        "value": {
+                          "stringValue": "run_vector_math"
+                        }
+                      },
+                      {
+                        "key": "org_name",
+                        "value": {
+                          "stringValue": "XPLG-benchmarker-dev-tag-test"
+                        }
+                      },
+                      {
+                        "key": "client_id",
+                        "value": {
+                          "stringValue": "py-app-for-otel-collectors-example"
+                        }
+                      }
+                    ],
+                    "startTimeUnixNano": "1747934337075381000",
+                    "timeUnixNano": "1747934491779562000",
+                    "asInt": "9"
+                  }
+                ],
+                "aggregationTemporality": 2,
+                "isMonotonic": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{
+  "resourceMetrics": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "telemetry.sdk.language",
+            "value": {
+              "stringValue": "python"
+            }
+          },
+          {
+            "key": "telemetry.sdk.name",
+            "value": {
+              "stringValue": "opentelemetry"
+            }
+          },
+          {
+            "key": "telemetry.sdk.version",
+            "value": {
+              "stringValue": "1.33.1"
+            }
+          },
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "py-app-for-otel-collectors-example"
+            }
+          }
+        ]
+      },
+      "scopeMetrics": [
+        {
+          "scope": {
+            "name": "example-meter"
+          },
+          "metrics": [
+            {
+              "name": "hello_requests",
+              "sum": {
+                "dataPoints": [
+                  {
+                    "attributes": [
+                      {
+                        "key": "endpoint",
+                        "value": {
+                          "stringValue": "run_vector_math"
+                        }
+                      },
+                      {
+                        "key": "org_name",
+                        "value": {
+                          "stringValue": "XPLG-benchmarker-dev-tag-test"
+                        }
+                      },
+                      {
+                        "key": "client_id",
+                        "value": {
+                          "stringValue": "py-app-for-otel-collectors-example"
+                        }
+                      }
+                    ],
+                    "startTimeUnixNano": "1747934337075381000",
+                    "timeUnixNano": "1747934551788571000",
+                    "asInt": "9"
+                  }
+                ],
+                "aggregationTemporality": 2,
+                "isMonotonic": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{
+  "resourceMetrics": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "telemetry.sdk.language",
+            "value": {
+              "stringValue": "python"
+            }
+          },
+          {
+            "key": "telemetry.sdk.name",
+            "value": {
+              "stringValue": "opentelemetry"
+            }
+          },
+          {
+            "key": "telemetry.sdk.version",
+            "value": {
+              "stringValue": "1.33.1"
+            }
+          },
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "py-app-for-otel-collectors-example"
+            }
+          }
+        ]
+      },
+      "scopeMetrics": [
+        {
+          "scope": {
+            "name": "example-meter"
+          },
+          "metrics": [
+            {
+              "name": "hello_requests",
+              "sum": {
+                "dataPoints": [
+                  {
+                    "attributes": [
+                      {
+                        "key": "endpoint",
+                        "value": {
+                          "stringValue": "run_vector_math"
+                        }
+                      },
+                      {
+                        "key": "org_name",
+                        "value": {
+                          "stringValue": "XPLG-benchmarker-dev-tag-test"
+                        }
+                      },
+                      {
+                        "key": "client_id",
+                        "value": {
+                          "stringValue": "py-app-for-otel-collectors-example"
+                        }
+                      }
+                    ],
+                    "startTimeUnixNano": "1747934337075381000",
+                    "timeUnixNano": "1747934611808147000",
+                    "asInt": "9"
+                  }
+                ],
+                "aggregationTemporality": 2,
+                "isMonotonic": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{
+  "resourceMetrics": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "telemetry.sdk.language",
+            "value": {
+              "stringValue": "python"
+            }
+          },
+          {
+            "key": "telemetry.sdk.name",
+            "value": {
+              "stringValue": "opentelemetry"
+            }
+          },
+          {
+            "key": "telemetry.sdk.version",
+            "value": {
+              "stringValue": "1.33.1"
+            }
+          },
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "py-app-for-otel-collectors-example"
+            }
+          }
+        ]
+      },
+      "scopeMetrics": [
+        {
+          "scope": {
+            "name": "example-meter"
+          },
+          "metrics": [
+            {
+              "name": "hello_requests",
+              "sum": {
+                "dataPoints": [
+                  {
+                    "attributes": [
+                      {
+                        "key": "endpoint",
+                        "value": {
+                          "stringValue": "run_vector_math"
+                        }
+                      },
+                      {
+                        "key": "org_name",
+                        "value": {
+                          "stringValue": "XPLG-benchmarker-dev-tag-test"
+                        }
+                      },
+                      {
+                        "key": "client_id",
+                        "value": {
+                          "stringValue": "py-app-for-otel-collectors-example"
+                        }
+                      }
+                    ],
+                    "startTimeUnixNano": "1747934337075381000",
+                    "timeUnixNano": "1747934671816328000",
+                    "asInt": "9"
+                  }
+                ],
+                "aggregationTemporality": 2,
+                "isMonotonic": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{
+  "resourceMetrics": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "telemetry.sdk.language",
+            "value": {
+              "stringValue": "python"
+            }
+          },
+          {
+            "key": "telemetry.sdk.name",
+            "value": {
+              "stringValue": "opentelemetry"
+            }
+          },
+          {
+            "key": "telemetry.sdk.version",
+            "value": {
+              "stringValue": "1.33.1"
+            }
+          },
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "py-app-for-otel-collectors-example"
+            }
+          }
+        ]
+      },
+      "scopeMetrics": [
+        {
+          "scope": {
+            "name": "example-meter"
+          },
+          "metrics": [
+            {
+              "name": "hello_requests",
+              "sum": {
+                "dataPoints": [
+                  {
+                    "attributes": [
+                      {
+                        "key": "endpoint",
+                        "value": {
+                          "stringValue": "run_vector_math"
+                        }
+                      },
+                      {
+                        "key": "org_name",
+                        "value": {
+                          "stringValue": "XPLG-benchmarker-dev-tag-test"
+                        }
+                      },
+                      {
+                        "key": "client_id",
+                        "value": {
+                          "stringValue": "py-app-for-otel-collectors-example"
+                        }
+                      }
+                    ],
+                    "startTimeUnixNano": "1747934337075381000",
+                    "timeUnixNano": "1747934731828745000",
+                    "asInt": "9"
+                  }
+                ],
+                "aggregationTemporality": 2,
+                "isMonotonic": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{
+  "resourceMetrics": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "telemetry.sdk.language",
+            "value": {
+              "stringValue": "python"
+            }
+          },
+          {
+            "key": "telemetry.sdk.name",
+            "value": {
+              "stringValue": "opentelemetry"
+            }
+          },
+          {
+            "key": "telemetry.sdk.version",
+            "value": {
+              "stringValue": "1.33.1"
+            }
+          },
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "py-app-for-otel-collectors-example"
+            }
+          }
+        ]
+      },
+      "scopeMetrics": [
+        {
+          "scope": {
+            "name": "example-meter"
+          },
+          "metrics": [
+            {
+              "name": "hello_requests",
+              "sum": {
+                "dataPoints": [
+                  {
+                    "attributes": [
+                      {
+                        "key": "endpoint",
+                        "value": {
+                          "stringValue": "run_vector_math"
+                        }
+                      },
+                      {
+                        "key": "org_name",
+                        "value": {
+                          "stringValue": "XPLG-benchmarker-dev-tag-test"
+                        }
+                      },
+                      {
+                        "key": "client_id",
+                        "value": {
+                          "stringValue": "py-app-for-otel-collectors-example"
+                        }
+                      }
+                    ],
+                    "startTimeUnixNano": "1747934337075381000",
+                    "timeUnixNano": "1747934791837585000",
+                    "asInt": "9"
+                  }
+                ],
+                "aggregationTemporality": 2,
+                "isMonotonic": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{
+  "resourceMetrics": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "telemetry.sdk.language",
+            "value": {
+              "stringValue": "python"
+            }
+          },
+          {
+            "key": "telemetry.sdk.name",
+            "value": {
+              "stringValue": "opentelemetry"
+            }
+          },
+          {
+            "key": "telemetry.sdk.version",
+            "value": {
+              "stringValue": "1.33.1"
+            }
+          },
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "py-app-for-otel-collectors-example"
+            }
+          }
+        ]
+      },
+      "scopeMetrics": [
+        {
+          "scope": {
+            "name": "example-meter"
+          },
+          "metrics": [
+            {
+              "name": "hello_requests",
+              "sum": {
+                "dataPoints": [
+                  {
+                    "attributes": [
+                      {
+                        "key": "endpoint",
+                        "value": {
+                          "stringValue": "run_vector_math"
+                        }
+                      },
+                      {
+                        "key": "org_name",
+                        "value": {
+                          "stringValue": "XPLG-benchmarker-dev-tag-test"
+                        }
+                      },
+                      {
+                        "key": "client_id",
+                        "value": {
+                          "stringValue": "py-app-for-otel-collectors-example"
+                        }
+                      }
+                    ],
+                    "startTimeUnixNano": "1747934337075381000",
+                    "timeUnixNano": "1747934851845261000",
+                    "asInt": "9"
+                  }
+                ],
+                "aggregationTemporality": 2,
+                "isMonotonic": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{
+  "resourceMetrics": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "telemetry.sdk.language",
+            "value": {
+              "stringValue": "python"
+            }
+          },
+          {
+            "key": "telemetry.sdk.name",
+            "value": {
+              "stringValue": "opentelemetry"
+            }
+          },
+          {
+            "key": "telemetry.sdk.version",
+            "value": {
+              "stringValue": "1.33.1"
+            }
+          },
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "py-app-for-otel-collectors-example"
+            }
+          }
+        ]
+      },
+      "scopeMetrics": [
+        {
+          "scope": {
+            "name": "example-meter"
+          },
+          "metrics": [
+            {
+              "name": "hello_requests",
+              "sum": {
+                "dataPoints": [
+                  {
+                    "attributes": [
+                      {
+                        "key": "endpoint",
+                        "value": {
+                          "stringValue": "run_vector_math"
+                        }
+                      },
+                      {
+                        "key": "org_name",
+                        "value": {
+                          "stringValue": "XPLG-benchmarker-dev-tag-test"
+                        }
+                      },
+                      {
+                        "key": "client_id",
+                        "value": {
+                          "stringValue": "py-app-for-otel-collectors-example"
+                        }
+                      }
+                    ],
+                    "startTimeUnixNano": "1747934337075381000",
+                    "timeUnixNano": "1747934911853503000",
+                    "asInt": "9"
+                  }
+                ],
+                "aggregationTemporality": 2,
+                "isMonotonic": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{
+  "resourceMetrics": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "telemetry.sdk.language",
+            "value": {
+              "stringValue": "python"
+            }
+          },
+          {
+            "key": "telemetry.sdk.name",
+            "value": {
+              "stringValue": "opentelemetry"
+            }
+          },
+          {
+            "key": "telemetry.sdk.version",
+            "value": {
+              "stringValue": "1.33.1"
+            }
+          },
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "py-app-for-otel-collectors-example"
+            }
+          }
+        ]
+      },
+      "scopeMetrics": [
+        {
+          "scope": {
+            "name": "example-meter"
+          },
+          "metrics": [
+            {
+              "name": "hello_requests",
+              "sum": {
+                "dataPoints": [
+                  {
+                    "attributes": [
+                      {
+                        "key": "endpoint",
+                        "value": {
+                          "stringValue": "run_vector_math"
+                        }
+                      },
+                      {
+                        "key": "org_name",
+                        "value": {
+                          "stringValue": "XPLG-benchmarker-dev-tag-test"
+                        }
+                      },
+                      {
+                        "key": "client_id",
+                        "value": {
+                          "stringValue": "py-app-for-otel-collectors-example"
+                        }
+                      }
+                    ],
+                    "startTimeUnixNano": "1747934337075381000",
+                    "timeUnixNano": "1747934971871287000",
+                    "asInt": "9"
+                  }
+                ],
+                "aggregationTemporality": 2,
+                "isMonotonic": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
