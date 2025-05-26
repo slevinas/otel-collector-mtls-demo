@@ -11,11 +11,10 @@ This project demonstrates secure telemetry collection using **OpenTelemetry** in
 - [Project Structure (Key Files)](#️-project-structure-key-files)
 - [Prerequisites](#1-prerequisites)
 - [Clone & Setup](#2-clone--setup)
-- [Directory & File Structure](#️-project-structure-key-files)
-- [Docker Compose Setup](#docker-compose-setup)
+- [Docker Compose Setup](#4-docker-compose-setup)
 - [Collector mTLS Configuration](#5--collector-config-used-in-this-demo)
 - [Run the OTel Collector (with mTLS)](#6-run-the-otel-collector-with-mtls)
-- [Python OTel SDK Example](#python-otel-sdk-example)
+- [Python OTel SDK Example](#6--python-otel-sdk-example)
 - [Environment Variables](#3-environment-variables)
 - [Enriching Metrics with the Transform Processor](#enriching-metrics-with-the-transform-processor)
 
@@ -162,11 +161,11 @@ service:
 
 ---
 
-### 🐍 Python OTel SDK Example
+### 6. 🐍 Python OTel SDK Example
 
 Here's how to configure a Python service to send telemetry securely to the collector using mTLS:
 
-**1. Set required environment variables** (in your `.env`):
+**6.1. Set required environment variables** (in your `.env`):
 
 ```env
 OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=https://otel-collector:4318/v1/metrics
@@ -197,7 +196,7 @@ OTEL_EXPORTER_OTLP_INSECURE=false
 
 ```
 
-\*\*2. Python setup code:
+**6.2. Python setup code**:
 
 ```python
 import os
@@ -247,7 +246,7 @@ tracer = trace.get_tracer("example-tracer")
 
 ---
 
-### 6. Run the OTel Collector (with mTLS)
+### 7. Run the OTel Collector (with mTLS)
 
 ```bash
 
