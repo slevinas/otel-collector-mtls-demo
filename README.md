@@ -20,7 +20,7 @@ This project demonstrates secure telemetry collection using **OpenTelemetry** in
 - [Checkout the Collector Output](#9-inspect-output)
 - [Troubleshooting](#critical-configuration-points-to-watch)
 - [References](#references)
-- [Running the Demo](#run-dem)
+
 
 ---
 
