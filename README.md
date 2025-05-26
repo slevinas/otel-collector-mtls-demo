@@ -12,11 +12,11 @@ This project demonstrates secure telemetry collection using **OpenTelemetry** in
 - [Prerequisites](#1-prerequisites)
 - [Clone & Setup](#2-clone--setup)
 - [Docker Compose Setup](#4-docker-compose-setup)
-- [Collector mTLS Configuration](#5--collector-config-used-in-this-demo)
-- [Run the OTel Collector (with mTLS)](#6-run-the-otel-collector-with-mtls)
+- [Collector mTLS Configuration](#5-collector-config-used-in-this-demo)
 - [Python OTel SDK Example](#6--python-otel-sdk-example)
 - [Enriching Metrics with the Transform Processor](#enriching-metrics-with-the-transform-processor)
-
+- [Run the OTel Collector (with mTLS)](#6-run-the-otel-collector-with-mtls)
+- [Checkout the Collector Output](#9-inspect-output)
 - [Troubleshooting](#troubleshooting)
 - [References](#references)
 - [Running the Demo](#run-dem)
@@ -319,14 +319,14 @@ processors:
 docker compose up --build -d
 ```
 
-#### 6.1. Check the logs:
+#### 7.1. Check the logs:
 
 ```bash
 
 docker logs otel-collector
 ```
 
-### 7. Run the FastAPI App
+### 8 Run the FastAPI App
 
 ```bash
 uvicorn admin_server.app:app --reload
@@ -334,7 +334,7 @@ uvicorn admin_server.app:app --reload
 
 - If you see errors about certificates or connection refused, double-check your cert paths, SAN config, and collector status.
 
-### 8. Test collector manually **Push Test Metric:**
+### 8.1 Test collector manually **Push Test Metric:**
 
 ```bash
 curl -k https://localhost:4318/v1/metrics \
@@ -344,7 +344,7 @@ curl -k https://localhost:4318/v1/metrics \
 --data-binary @docs/otel-collector/test-metric.json
 ```
 
-### 9. **Inspect Output:**
+### 9. Inspect Output:
 
 - 1. file: `cat logs/tagged_metrics.json | jq .`
 - Confirm both static `org_name` and dynamic `client_id` are present.
