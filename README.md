@@ -15,7 +15,6 @@ This project demonstrates secure telemetry collection using **OpenTelemetry** in
 - [Collector mTLS Configuration](#5--collector-config-used-in-this-demo)
 - [Run the OTel Collector (with mTLS)](#6-run-the-otel-collector-with-mtls)
 - [Python OTel SDK Example](#6--python-otel-sdk-example)
-- [Environment Variables](#3-environment-variables)
 - [Enriching Metrics with the Transform Processor](#enriching-metrics-with-the-transform-processor)
 
 - [Troubleshooting](#troubleshooting)
@@ -242,6 +241,73 @@ trace.set_tracer_provider(TracerProvider(
 meter = metrics.get_meter("example-meter")
 tracer = trace.get_tracer("example-tracer")
 
+```
+
+---
+
+### 6. Enriching Metrics with a Transform Processor
+
+The transform processor in the Collector allows you to add tags (attributes) to metrics before exporting.
+
+Tagging Strategy
+
+### 6.1 Goal
+
+Attach dynamic metadata such as `client_id`, `source`, or `org_name` to incoming telemetry based on client info or trace context.
+
+### 6.2 Approach A: Static Tagging with `attributes` Processor
+
+```yaml
+processors:
+  attributes/add_client_tag:
+    actions:
+      - key: org_name
+        value: XPLG-benchmarker-dev-tag-test
+        action: insert
+```
+
+**Explanation:** This inserts a static `org_name` into all resource attributes if not already present.
+
+### 6.3 Approach B: Dynamic Tagging with `transform` Processor
+
+```yaml
+processors:
+  transform/tag_metrics:
+    metric_statements:
+      - context: datapoint
+        statements:
+          - set(datapoint.attributes["client_id"], resource.attributes["service.name"])
+```
+
+**Explanation:** This dynamically copies the `service.name` from the resource section into each datapoint as `client_id`.
+
+### 2.4 Field Mapping
+
+| Source Field                    | Target Tag      | Example Value     |
+| ------------------------------- | --------------- | ----------------- |
+| `resource.service.name`         | `client_id`     | "admin-api"       |
+| `resource.custom_id`            | `org_name`      | "XPLG"            |
+| `datapoint.attributes.endpoint` | `endpoint_flat` | "run_vector_math" |
+
+```yaml
+processors:
+  memory_limiter:
+    check_interval: 5s
+    limit_mib: 200
+    spike_limit_mib: 50
+  batch:
+    timeout: 5s
+    send_batch_size: 1024
+  attributes/add_client_tag:
+    actions:
+      - key: org_name
+        value: XPLG-benchmarker-dev-tag-test
+        action: insert
+  transform/tag_metrics:
+    metric_statements:
+      - context: datapoint
+        statements:
+          - set(datapoint.attributes["client_id"], resource.attributes["service.name"])
 ```
 
 ---
