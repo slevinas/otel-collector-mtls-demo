@@ -13,11 +13,12 @@ This project demonstrates secure telemetry collection using **OpenTelemetry** in
 - [Clone & Setup](#2-clone--setup)
 - [Docker Compose Setup](#4-docker-compose-setup)
 - [Collector mTLS Configuration](#5-collector-config-used-in-this-demo)
-- [Python OTel SDK Example](#6--python-otel-sdk-example)
 - [Enriching Metrics with the Transform Processor](#enriching-metrics-with-the-transform-processor)
+- [Python OTel SDK Example](#6--python-otel-sdk-example)
 - [Run the OTel Collector (with mTLS)](#6-run-the-otel-collector-with-mtls)
+- [Run the FastAPI App](#run-the-fastapi-app)
 - [Checkout the Collector Output](#9-inspect-output)
-- [Troubleshooting](#troubleshooting)
+- [Troubleshooting](#critical-configuration-points-to-watch)
 - [References](#references)
 - [Running the Demo](#run-dem)
 
@@ -48,7 +49,7 @@ This project demonstrates secure telemetry collection using **OpenTelemetry** in
 
 ```
 
-### 1. Prerequisites
+### Prerequisites
 
 - Python 3.8+
 
@@ -56,7 +57,7 @@ This project demonstrates secure telemetry collection using **OpenTelemetry** in
 
 - OpenSSL (for certs)
 
-### 2. Clone & Setup
+### Clone & Setup
 
 ```bash
 
@@ -66,7 +67,7 @@ python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Docker Compose Setup
+### Docker Compose Setup
 
 ```yaml
 version: "3.9"
@@ -86,7 +87,7 @@ services:
     restart: unless-stopped
 ```
 
-### 5. Collector Config (used in this demo)
+### Collector Config (used in this demo)
 
 ```yaml
 receivers:
@@ -156,6 +157,73 @@ service:
           transform/tag_metrics,
         ]
       exporters: [debug]
+```
+
+---
+
+### Enriching Metrics with a Transform Processor
+
+The transform processor in the Collector allows you to add tags (attributes) to metrics before exporting.
+
+Tagging Strategy
+
+#### Goal
+
+Attach dynamic metadata such as `client_id`, `source`, or `org_name` to incoming telemetry based on client info or trace context.
+
+#### Approach A: Static Tagging with `attributes` Processor
+
+```yaml
+processors:
+  attributes/add_client_tag:
+    actions:
+      - key: org_name
+        value: XPLG-benchmarker-dev-tag-test
+        action: insert
+```
+
+**Explanation:** This inserts a static `org_name` into all resource attributes if not already present.
+
+#### Approach B: Dynamic Tagging with `transform` Processor
+
+```yaml
+processors:
+  transform/tag_metrics:
+    metric_statements:
+      - context: datapoint
+        statements:
+          - set(datapoint.attributes["client_id"], resource.attributes["service.name"])
+```
+
+**Explanation:** This dynamically copies the `service.name` from the resource section into each datapoint as `client_id`.
+
+##### Field Mapping
+
+| Source Field                    | Target Tag      | Example Value     |
+| ------------------------------- | --------------- | ----------------- |
+| `resource.service.name`         | `client_id`     | "admin-api"       |
+| `resource.custom_id`            | `org_name`      | "XPLG"            |
+| `datapoint.attributes.endpoint` | `endpoint_flat` | "run_vector_math" |
+
+```yaml
+processors:
+  memory_limiter:
+    check_interval: 5s
+    limit_mib: 200
+    spike_limit_mib: 50
+  batch:
+    timeout: 5s
+    send_batch_size: 1024
+  attributes/add_client_tag:
+    actions:
+      - key: org_name
+        value: XPLG-benchmarker-dev-tag-test
+        action: insert
+  transform/tag_metrics:
+    metric_statements:
+      - context: datapoint
+        statements:
+          - set(datapoint.attributes["client_id"], resource.attributes["service.name"])
 ```
 
 ---
@@ -245,73 +313,6 @@ tracer = trace.get_tracer("example-tracer")
 
 ---
 
-### 6. Enriching Metrics with a Transform Processor
-
-The transform processor in the Collector allows you to add tags (attributes) to metrics before exporting.
-
-Tagging Strategy
-
-### 6.1 Goal
-
-Attach dynamic metadata such as `client_id`, `source`, or `org_name` to incoming telemetry based on client info or trace context.
-
-### 6.2 Approach A: Static Tagging with `attributes` Processor
-
-```yaml
-processors:
-  attributes/add_client_tag:
-    actions:
-      - key: org_name
-        value: XPLG-benchmarker-dev-tag-test
-        action: insert
-```
-
-**Explanation:** This inserts a static `org_name` into all resource attributes if not already present.
-
-### 6.3 Approach B: Dynamic Tagging with `transform` Processor
-
-```yaml
-processors:
-  transform/tag_metrics:
-    metric_statements:
-      - context: datapoint
-        statements:
-          - set(datapoint.attributes["client_id"], resource.attributes["service.name"])
-```
-
-**Explanation:** This dynamically copies the `service.name` from the resource section into each datapoint as `client_id`.
-
-### 2.4 Field Mapping
-
-| Source Field                    | Target Tag      | Example Value     |
-| ------------------------------- | --------------- | ----------------- |
-| `resource.service.name`         | `client_id`     | "admin-api"       |
-| `resource.custom_id`            | `org_name`      | "XPLG"            |
-| `datapoint.attributes.endpoint` | `endpoint_flat` | "run_vector_math" |
-
-```yaml
-processors:
-  memory_limiter:
-    check_interval: 5s
-    limit_mib: 200
-    spike_limit_mib: 50
-  batch:
-    timeout: 5s
-    send_batch_size: 1024
-  attributes/add_client_tag:
-    actions:
-      - key: org_name
-        value: XPLG-benchmarker-dev-tag-test
-        action: insert
-  transform/tag_metrics:
-    metric_statements:
-      - context: datapoint
-        statements:
-          - set(datapoint.attributes["client_id"], resource.attributes["service.name"])
-```
-
----
-
 ### 7. Run the OTel Collector (with mTLS)
 
 ```bash
@@ -326,7 +327,7 @@ docker compose up --build -d
 docker logs otel-collector
 ```
 
-### 8 Run the FastAPI App
+### Run the FastAPI App
 
 ```bash
 uvicorn admin_server.app:app --reload
@@ -334,7 +335,7 @@ uvicorn admin_server.app:app --reload
 
 - If you see errors about certificates or connection refused, double-check your cert paths, SAN config, and collector status.
 
-### 8.1 Test collector manually **Push Test Metric:**
+### Test collector manually **Push Test Metric:**
 
 ```bash
 curl -k https://localhost:4318/v1/metrics \
@@ -344,12 +345,12 @@ curl -k https://localhost:4318/v1/metrics \
 --data-binary @docs/otel-collector/test-metric.json
 ```
 
-### 9. Inspect Output:
+### Inspect Output:
 
 - 1. file: `cat logs/tagged_metrics.json | jq .`
 - Confirm both static `org_name` and dynamic `client_id` are present.
 
-### 9.2. Expected Output with Static and Dynamic Tagging
+### Expected Output with Static and Dynamic Tagging
 
 ```json
 {
@@ -395,7 +396,7 @@ Permission denied: Double-check cert file permissions in Docker.
 
 Collector not running: Ensure container is up and listening on 4318.
 
-### 8. Best Practices & Recommendations
+### Best Practices & Recommendations
 
 - Rotate certificates regularly.
 
@@ -411,7 +412,7 @@ Collector not running: Ensure container is up and listening on 4318.
 
 - Monitor collector logs for certificate errors, especially after renewal.
 
-## 9. Critical Configuration Points to Watch
+## Critical Configuration Points to Watch
 
 | Section                          | Key Concern                                      | Example/Reminder                                       |
 | -------------------------------- | ------------------------------------------------ | ------------------------------------------------------ |
@@ -421,7 +422,7 @@ Collector not running: Ensure container is up and listening on 4318.
 | Cert File Paths                  | Must be **mounted correctly** inside Docker/K8s  | Use `/etc/otel/certs/...` with volumeMounts            |
 | Env Variables                    | Avoid injecting secrets via `env:` in YAML       | Prefer mounted files or Vault integration              |
 
-### 9. References
+### References
 
 OpenTelemetry Python Docs
 
@@ -431,7 +432,7 @@ SSL/TLS SAN Info
 
 Debugging Python SSL
 
-### 10. Attributions
+### Attributions
 
 This demo was inspired by real-world need for secure observability pipelines.
 Feel free to use as a starting point for production-grade OTel setups!
@@ -446,7 +447,7 @@ Feel free to use as a starting point for production-grade OTel setups!
 
 ---
 
-## 📌 6. Next Steps
+## 📌 Next Steps
 
 - Add remote `otlp` exporter for production telemetry.
 - Integrate Helm/Kubernetes manifests with `Secret` volumes for TLS.
